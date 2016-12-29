@@ -1,0 +1,661 @@
+//Car1 starts => 1
+//Car1 stops =>  2
+//Car1 up => o
+//Car1 down => L
+//Car2 starts => 3
+//Car2 stops =>  4
+//Car2 up => p
+//Car2 down => ;
+//Boat Start => 7
+//Boat Stop => 8
+//Sun up => s
+//rain start=> r
+//rain stop=> t
+//cloud move => c
+//cloud stop => e
+
+
+#include<windows.h>
+#include <iostream>
+#include <GL/glut.h>
+#include <math.h>
+
+
+int car1Status = 0;
+int car2Status = 0;
+int boatStatus = 0;
+float car1X = 2000;
+float car1Y = 0;
+float car2X = 0;
+float car2Y = 0;
+
+float sunX = 0;
+float sunY = 0;
+float boatX = 0;
+float boatY = 0;
+int meghStatus = 0;
+int sunStatus = 0;
+
+float meghX = 0;
+float meghY = 0;
+
+int rainStatus = 0;
+float traRainX = 0;
+float traRainY = 1500;
+int aftercollision = 0;
+int car1Up = 0;
+int car2Up = 0;
+
+float move, angle;
+
+void DrawCircle(float cx, float cy, float r, int num_segments) {
+
+	glBegin(GL_TRIANGLE_FAN);
+	for (int i = 0; i < num_segments; i++)
+	{
+		float theta = 2.0f * 3.1415926f * float(i) / float(num_segments);//get the current angle
+
+		float x = r * cosf(theta);//calculate the x component
+		float y = r * sinf(theta);//calculate the y component
+
+		glVertex2f(x + cx, y + cy);//output vertex
+
+	}
+	glEnd();
+}
+
+void drawSun(int x)
+{
+	glColor3f(3.0, 1.0, 0.5);
+	DrawCircle(450, 1000, 40, 1000);
+}
+
+void megh(int x) {
+
+
+
+
+	glColor3f(1.0, 1.0, 1.0);
+	DrawCircle(100, 1300, 60, 2000);//1
+	DrawCircle(200, 1300, 80, 2000);//2
+	DrawCircle(300, 1300, 55, 2000);//3
+
+
+	DrawCircle(700, 1300, 60, 2000);//1
+	DrawCircle(800, 1300, 80, 2000);//2
+	DrawCircle(900, 1300, 55, 2000);//3
+
+	DrawCircle(1100, 1300, 60, 2000);//1
+	DrawCircle(1200, 1300, 80, 2000);//2
+	DrawCircle(1300, 1300, 55, 2000);//3
+
+	DrawCircle(1700, 1300, 60, 2000);//1
+	DrawCircle(1800, 1300, 80, 2000);//2
+	DrawCircle(1900, 1300, 55, 2000);//3
+
+
+}
+
+void movemegh()
+
+{
+	if (meghStatus == 1)
+	{
+		meghX += .5;
+	}
+	if (meghX>2000)
+	{
+		meghX = -200;
+	}
+	glPushMatrix();
+	glTranslatef(meghX, meghY, 0);
+	megh(1);
+	glPopMatrix();
+
+
+}
+
+void moveSun()
+{
+
+
+	if (sunStatus == 1)
+	{
+		if (sunY >= 400)
+			sunY = 400;
+		else
+			sunY += .5;
+	}
+
+	glPushMatrix();
+
+	glTranslatef(sunX, sunY, 0);
+
+	drawSun(1);
+	glPopMatrix();
+
+
+}
+
+void road() {
+
+
+
+	//ground
+	glBegin(GL_POLYGON);
+	glColor3f(0.4, 0.5, .1);
+	glVertex2i(0, 0);
+	glVertex2i(2000, 0);
+	glVertex2i(2000, 1500);
+	glVertex2i(0, 1500);
+	glEnd();
+
+
+
+	//house_part1
+	glBegin(GL_POLYGON);
+	glColor3f(0.0, 2.0, 1.0);
+	glVertex2i(0, 720);
+	glVertex2i(2000, 720);
+	glVertex2i(2000, 1100);
+	glVertex2i(0, 1100);
+	glEnd();
+
+	//sky
+	glBegin(GL_POLYGON);
+	glColor3f(0.0, 1.28, 2.55);
+	glVertex2i(0, 1100);
+	glVertex2i(2000, 1100);
+	glVertex2i(2000, 1500);
+	glVertex2i(0, 1500);
+	glEnd();
+	glBegin(GL_POLYGON);//roadnew
+	glColor3f(.38, .38, .38);
+	glVertex2i(0, 430);
+	glVertex2i(2000, 430);
+	glVertex2i(2000, 700);
+	glVertex2i(0, 700);
+	glEnd();
+	//road
+	glBegin(GL_POLYGON);
+	glColor3f(0, 0, 2.04);
+	glVertex2i(0, 0);
+	glVertex2i(2000, 0);
+	glVertex2i(2000, 430);
+	glVertex2i(0, 430);
+	glEnd();
+
+
+
+
+	//border1
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 1.0, 1.0);
+	glVertex2i(100, 550);
+	glVertex2i(300, 550);
+	glVertex2i(300, 580);
+	glVertex2i(100, 580);
+	glEnd();
+	//border2
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 1.0, 1.0);
+	glVertex2i(600, 550);
+	glVertex2i(800, 550);
+	glVertex2i(800, 580);
+	glVertex2i(600, 580);
+	glEnd();
+
+
+	//border3
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 1.0, 1.0);
+	glVertex2i(1100, 550);
+	glVertex2i(1300, 550);
+	glVertex2i(1300, 580);
+	glVertex2i(1100, 580);
+	glEnd();
+
+	//border4
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 1.0, 1.0);
+	glVertex2i(1600, 550);
+	glVertex2i(1800, 550);
+	glVertex2i(1800, 580);
+	glVertex2i(1600, 580);
+	glEnd();
+	//sidebar2
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 1.0, 1.0);
+	glVertex2i(0, 410);
+	glVertex2i(2000, 410);
+	glVertex2i(2000, 430);
+	glVertex2i(0, 430);
+	glEnd();
+	//sidebar 1
+	glBegin(GL_POLYGON);
+	glColor3f(1.0, 1.0, 1.0);
+	glVertex2i(0, 700);
+	glVertex2i(2000, 700);
+	glVertex2i(2000, 720);
+	glVertex2i(0, 720);
+	glEnd();
+
+}
+
+void house1() {
+
+	//home1
+	//house_p1
+	glBegin(GL_POLYGON);
+	glColor3f(2.55, .51, .51);
+	glVertex2i(50, 720);
+	glVertex2i(250, 720);
+	glVertex2i(250, 920);
+	glVertex2i(50, 920);
+	glEnd();
+
+	//house_p2
+	glBegin(GL_POLYGON);
+	glColor3f(.77, .26, 0);
+	glVertex2i(50, 920);
+	glVertex2i(250, 920);
+	glVertex2i(150, 1100);
+
+	glEnd();
+
+	//home2
+	//house_p1
+	glBegin(GL_POLYGON);
+	glColor3f(2.55, .51, .51);
+	glVertex2i(350, 720);
+	glVertex2i(550, 720);
+	glVertex2i(550, 920);
+	glVertex2i(350, 920);
+	glEnd();
+
+	//house_p2
+	glBegin(GL_POLYGON);
+	glColor3f(.77, .26, 0);
+	glVertex2i(350, 920);
+	glVertex2i(550, 920);
+	glVertex2i(450, 1100);
+
+
+	glEnd();
+
+	//home3
+	//house_p1
+	glBegin(GL_POLYGON);
+	glColor3f(2.55, .51, .51);
+	glVertex2i(950, 720);
+	glVertex2i(1150, 720);
+	glVertex2i(1150, 920);
+	glVertex2i(950, 920);
+	glEnd();
+
+	//house_p2
+	glBegin(GL_POLYGON);
+	glColor3f(.77, .26, 0);
+	glVertex2i(950, 920);
+	glVertex2i(1150, 920);
+	glVertex2i(1050, 1100);
+	glEnd();
+}
+
+void moveboat(int x)
+{
+	glBegin(GL_QUADS); //BOAT
+	glColor3f(1.9, 0.0, 0.0);
+	glVertex2i(100, 200);
+	glVertex2i(200, 200);
+	glVertex2i(280, 250);
+	glVertex2i(10, 250);
+	glVertex2i(20, 300);
+	glEnd();
+
+	glBegin(GL_POLYGON); //BOAT
+	glColor3f(0.0, 1.8, 0.5);
+	glVertex2i(60, 250);
+	glVertex2i(220, 250);
+	glVertex2i(170, 310);
+	glEnd();
+
+
+}
+void boat()
+{
+	if (boatStatus == 1)
+	{
+		boatX += .5;
+	}
+	if (boatX>2000)
+	{
+		boatX = -600;
+	}
+	glPushMatrix();
+	glTranslatef(boatX, boatY, 0);
+	moveboat(1);
+	glPopMatrix();
+}
+
+void car1(int x) {
+
+
+	//box1
+	glBegin(GL_POLYGON);
+	glColor3f(2.04, 0, 0);
+	if (aftercollision == 1) {
+		glColor3f(0, 0, 0);
+	}
+	glVertex2i(0, 500);
+	glVertex2i(70, 500);
+	glVertex2i(70, 540);
+	glVertex2i(0, 540);
+	glEnd();
+
+
+	//box2
+	glBegin(GL_POLYGON);
+	glColor3f(2.55, 2.55, 0);
+
+	glVertex2i(10, 540);
+	glVertex2i(50, 540);
+	glVertex2i(50, 570);
+	glVertex2i(10, 570);
+	glEnd();
+
+	//tier1
+	glBegin(GL_POLYGON);
+	glColor3f(0.3, 0.3, 0.3);
+	glVertex2i(10, 490);
+	glVertex2i(20, 490);
+	glVertex2i(20, 500);
+	glVertex2i(10, 500);
+	glEnd();
+
+
+	//tier2
+	glBegin(GL_POLYGON);
+	glColor3f(0.3, 0.3, 0.3);
+	glVertex2i(50, 490);
+	glVertex2i(60, 490);
+	glVertex2i(60, 500);
+	glVertex2i(50, 500);
+	glEnd();
+
+
+
+}
+
+
+void car2(int x) {
+
+
+	//box1
+	glBegin(GL_POLYGON);
+	glColor3f(2.55, 2.55, 0);
+	if (aftercollision == 1) {
+		glColor3f(0, 0, 0);
+	}
+	glVertex2i(0, 500);
+	glVertex2i(70, 500);
+	glVertex2i(70, 540);
+	glVertex2i(0, 540);
+	glEnd();
+
+
+	//box2
+	glBegin(GL_POLYGON);
+	glColor3f(0.1, 0.2, 0.1);
+
+	glVertex2i(10, 540);
+	glVertex2i(60, 540);
+	glVertex2i(60, 570);
+	glVertex2i(10, 570);
+	glEnd();
+
+	//tier1
+	glBegin(GL_POLYGON);
+	glColor3f(0.3, 0.3, 0.3);
+	glVertex2i(10, 490);
+	glVertex2i(20, 490);
+	glVertex2i(20, 500);
+	glVertex2i(10, 500);
+	glEnd();
+
+
+	//tier2
+	glBegin(GL_POLYGON);
+	glColor3f(0.3, 0.3, 0.3);
+	glVertex2i(50, 490);
+	glVertex2i(60, 490);
+	glVertex2i(60, 500);
+	glVertex2i(50, 500);
+	glEnd();
+
+
+
+}
+
+void movecar1()
+{
+	if (car1Status == 1)
+	{
+		car1X -= 1;
+	}
+	if (car1X<=0)
+	{
+		car1X = 2000;
+	}
+	if ((car1X <= car2X+70 && car1X >= car2X-70 ) && car1Up==car2Up)
+	{
+		car1Status = 0;
+		car2Status = 0;
+		aftercollision = 1;
+
+
+
+	}
+	glPushMatrix();
+	glTranslatef(car1X, car1Y, 0);
+	car1(1);
+	glPopMatrix();
+}
+
+
+void movecar2()
+{
+	if (car2Status == 1)
+	{
+		car2X += .5;
+	}
+	if (car2X>2000)
+	{
+		car2X = 00;
+	}
+	glPushMatrix();
+	glTranslatef(car2X, car2Y, 0);
+	car2(1);
+	glPopMatrix();
+}
+
+
+
+void drawRain(int j)
+{
+
+
+	int x = 0, y = 0;
+	glColor3f(0.9, 0.9, 0.9);
+	for (int i = 0; i<80; i++)
+	{
+		for (int j = 0; j<80; j++)
+		{
+			glBegin(GL_LINES);
+			glVertex2i(x, y);
+			y += 10;
+			glVertex2i(x + 3, y);
+			y += 30;
+			glEnd();
+		}
+		y = 0;
+		x += 30;
+	}
+
+
+}
+void rain()
+{
+	if (rainStatus == 1)
+	{
+		traRainY -= 2.5;
+
+		if (traRainY<-100)
+		{
+			traRainY = 0;
+		}
+	}
+
+	glPushMatrix();
+	glTranslatef(traRainX, traRainY, 0);
+	drawRain(0);
+	glPopMatrix();
+}
+
+void myDisplay(void)
+{
+
+	road();
+	moveSun();
+	house1();
+	movecar1();
+	movecar2();
+	movemegh();
+
+
+	boat();
+	rain();
+	glFlush();
+	glutPostRedisplay();
+	glutSwapBuffers();
+}
+
+
+void keyboard(unsigned char key, int x, int y)
+
+{
+	if (key == '7')
+	{		               //boat start
+		boatStatus = 1;
+
+	}
+
+
+	else if (key == '8')
+		//boat stop
+	{
+		boatStatus = 0;
+
+	}
+
+
+
+
+	else if (key == '1' && aftercollision==0 )		//car1 start
+	{
+		car1Status = 1;
+	}
+	else if (key == '2')		//car1 stop
+	{
+		car1Status = 0;
+	}
+	else if (key == '3'&& aftercollision == 0)		//car2 start
+	{
+		car2Status = 1;
+	}
+	else if (key == '4')		//car2 stop
+	{
+		car2Status = 0;
+	}
+
+
+	else if (key == 'S' || key == 's')		//sun start
+	{
+		sunStatus = 1;
+	}
+
+	else if (key == 'N' || key == 'n')		//sun  stOP
+	{
+		sunStatus = 0;
+	}
+
+	else if (key == 'C' || key == 'c')
+		//megh start
+	{
+		meghStatus = 1;
+	}
+	else if (key == 'e' || key == 'N')
+		//megh STOP
+	{
+		meghStatus = 0;
+	}
+
+	else if (key == 'r')		//rain start
+	{
+		rainStatus = 1;
+	}
+	else if (key == 't')		//rain stop
+	{
+		rainStatus = 0;
+	}
+
+	else if (key == 'o' && car1Up == 0 && aftercollision == 0)		//car1 go up
+	{
+		car1Y += 100;
+		car1Up = 1;
+
+	}
+	else if (key == 'l' && car1Up==1 && aftercollision == 0)		//car1 go down
+	{
+		car1Y -= 100;
+		car1Up = 0;
+	}
+
+	else if (key == 'p' && car2Up == 0 && aftercollision == 0)		//car2 go up
+	{
+		car2Y += 100;
+		car2Up = 1;
+
+	}
+	else if (key == ';' && car2Up == 1 && aftercollision == 0)		//car2 go down
+	{
+		car2Y -= 100;
+		car2Up = 0;
+	}
+
+
+
+}
+void myInit(void)
+{
+	glClearColor(0.0, 0.0, 1.0, 0.0);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glPointSize(0.0);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0.0, 2000.0, 0.0, 1500.0);
+}
+
+int main(int argc, char** argv)
+{
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowSize(2000, 1500);
+	glutInitWindowPosition(0, 0);
+
+	glutCreateWindow("finalproject");
+	glutDisplayFunc(myDisplay);
+	glutKeyboardFunc(keyboard);
+	myInit();
+	glutMainLoop();
+}

@@ -1,0 +1,151 @@
+
+/* Taping Ball 
+
+        1. Rana, Kaji shoohel   13-24334-2
+	2. Hosen, Md.Mosaddek   13-23718-1
+	3. Tasnim Nishat        13-23716-1
+	4. Jui Tanjen jahan     13-23145-1  */
+
+
+
+#include<stdlib.h>
+#include<GL/glut.h>
+#include<iostream>
+#include<math.h>
+using namespace std;
+
+float posX = 15;
+float posY = 40;
+float b = 0.0;//ball moving--ball up-down speed
+int i = 0, sci = 0;
+int wflag = 1;
+int score;
+
+void ball()
+{
+	glColor3f(1.1, 0.0, 0.0);
+
+	glBegin(GL_POLYGON);
+	for (int i = 0; i<200; i++)
+	{
+		float pi = 3.1416;
+		float A = (i * 2 * pi) / 200;
+		float r = 15;
+		float x = r * cos(A);
+		float y = r * sin(A);
+		glVertex2f(posX + x, posY + y);
+	}
+	glEnd();
+
+}
+
+void display(void)
+{
+
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	
+	if (i == -720)
+	{
+		glColor3f(0.9, 0.9, 0.9);
+		glRectf(0.0, 0.0, 100.0, 100.0);
+		glColor3f(0.1, 0.1, 0.1);
+		glutSwapBuffers();
+		glFlush();
+		cout << "Game over" << endl;
+		cout << "score:" << score << endl;
+		//exit(1);
+		glutPostRedisplay();
+	}
+
+
+
+	if (wflag == 1)//Welcome Screen
+	{
+		wflag = 0;
+		glColor3f(0.3, 0.3, 0.3);
+		cout << "CLICK TO START\n" << endl;
+		cout << "CLICK AND HOLD LEFT MOUSE BUTTON TO GO UP\n" << endl;
+		cout << "RELEASE TO GO DOWN\n" << endl;
+		ball();
+		glutSwapBuffers();
+		glFlush();
+		//exit(1);
+	}
+	else
+	{
+		glPushMatrix();
+		glColor3f(0.0, 0.0, 1.0);
+		glRectf(-400.0, -50.0, 1000.0, -45.0);//down bar
+		
+		glTranslatef(0.0, b, 0.0);
+		ball();
+		glPopMatrix();
+		glutSwapBuffers();
+		glFlush();
+	}
+}
+void ballup()
+{
+	b += 0.1;
+	i++;
+	glutPostRedisplay();
+}
+void balldown()
+{
+	b -= 0.1;
+	i--;
+
+	glutPostRedisplay();
+}
+void Reshape(int w, int h)
+{
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	if (w <= h)
+		gluOrtho2D(0.0, 640.0, 0.0, 480.0);//,-10.0,20.0);
+	else
+		gluOrtho2D(-2.0*(GLfloat)w / (GLfloat)h, 2.0*(GLfloat)w / (GLfloat)h, -2.0, 2.0);//,-10.0,20.0);
+	glMatrixMode(GL_MODELVIEW);
+	glutPostRedisplay();
+}
+void mouse(int btn, int state, int x, int y)
+{
+	if (btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
+		glutIdleFunc(ballup);
+	}
+	if (btn == GLUT_LEFT_BUTTON && state == GLUT_UP){
+		glutIdleFunc(balldown);
+		score = score + 1;
+	}
+	glutPostRedisplay();
+}
+
+void init(void)
+{
+	
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	
+	glShadeModel(GL_SMOOTH);
+	glLoadIdentity();
+	gluOrtho2D(0.0, 100.0, 0.0, 100.0);//, -1.0 , 0.0);
+}
+
+int main(int argc, char** argv)
+{
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(800, 600);
+	glutInitWindowPosition(0, 0);
+	glutCreateWindow("Tapping ball");
+	init();
+	glutReshapeFunc(Reshape);
+	glutDisplayFunc(display);
+	glutMouseFunc(mouse);
+	glutMainLoop();
+
+	return 0;
+}
+
+
