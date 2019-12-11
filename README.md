@@ -1,5 +1,5 @@
 # Computer-Graphics--OpenGL-GLUT
-Some basic implementation of OpenGL with GLUT is stored here
+# Some basic implementation of OpenGL with GLUT is stored here.
 These are the works of different students of Computer Graphics course taught in AIUB from different semester. 
 These codes are the intellectual property of the students who developed the applications hosted in this repository.
 The concern from the students have been taken to showcase these works in the world wide web.
